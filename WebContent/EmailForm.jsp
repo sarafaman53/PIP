@@ -4,6 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>JavaMail Utility</title>
 </head>
 <body>
 <form action="EmailUtilityServlet" method="post">
@@ -15,6 +16,7 @@
 </tr>
 <tr>
 <td>Recipients</td>
+<td><select style="width: 100%" name="recipients" multiple>
 <% String[] recipients = application.getInitParameter("recipients").split(",");
 for(String addr:recipients) {
 	%> 
