@@ -7,7 +7,7 @@
 <title>JavaMail Utility</title>
 </head>
 <body>
-<form action="EmailUtilityServlet" method="post">
+<form action="sendEmail" method="post">
 <table>
 <caption>Send An Email</caption>
 <tr>

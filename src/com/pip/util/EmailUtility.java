@@ -1,10 +1,8 @@
 package com.pip.util;
 
-import java.io.File;
+
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Session;
@@ -16,55 +14,95 @@ import javax.mail.internet.MimeMultipart;
 
 import com.pip.model.Email;
 
-
+/**
+ * This class performs
+ * commong Email Utilities
+ * 
+ * @author asara3
+ *
+ */
 public class EmailUtility {
 	
+	/**
+	 * Instantiates a new Email Utility
+	 * 
+	 */
+	private EmailUtility() {
+		
+	}
+
+	/**
+	 * Populates the Email Object and sets them
+	 * accordingly in the message object
+	 * 
+	 * @param emailMessage
+	 * @throws Exception
+	 */
 	public static void sendEmail(Email emailMessage) throws Exception {
 		
 		processEmail(emailMessage);
 		
 	}
 
+	/**
+	 * Sets the Email Object in the
+	 * message object accordingly
+	 * 
+	 * @param emailMessage
+	 * @throws Exception
+	 */
 	private static void processEmail(Email emailMessage) throws Exception {
 		
 		Message message = createPropertyAndMessage(emailMessage);
-		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse
-				(emailMessage.getRecipient(),Boolean.TRUE));
+		String[] recipientList = emailMessage.getRecipient();
+		InternetAddress[] recipientaddresses = new InternetAddress[emailMessage.getRecipient().length];
+		int counter = 0;
+		for(String recipient: recipientList) {
+			recipientaddresses[counter] = new InternetAddress(recipient);
+			counter++;
+		}
+		
+		message.setRecipients(Message.RecipientType.TO,recipientaddresses);
 		setFromAddress(emailMessage, message);
 		message.setSubject(emailMessage.getSubject());
 		message.setContent(emailMessage.getBody(), "text/plain");
-		setEmailAttachment(emailMessage, message);
+		setAttachment(emailMessage, message);
 		message.saveChanges();
 		Transport.send(message);
 	}
 
-	private static void setEmailAttachment(Email emailMessage, Message message) throws Exception {
-		
-		if (!emailMessage.getFile().equals(null) && !emailMessage.getFile().equals("")) {
-			
-			setAttachment(emailMessage, message);
-		}
-		
-	}
-
+	/**
+	 * 
+	 * Sets the Email Attachment
+	 * 
+	 * @param emailMessage
+	 * @param message
+	 * @throws Exception
+	 */
 	private static void setAttachment(Email emailMessage, Message message) throws Exception {
 		
 		MimeBodyPart bodyPart1 = new MimeBodyPart();
-		bodyPart1.setContent(message, "text/html");
-		
-		MimeBodyPart bodyPart2 = new MimeBodyPart();
-		FileDataSource fileDataSource = new FileDataSource( emailMessage.getFile());
-		bodyPart2.setDataHandler(new DataHandler(fileDataSource));
-		bodyPart2.setFileName(fileDataSource.getName());
-		
+		bodyPart1.setContent(emailMessage.getBody(), "text/html");
 		Multipart multipart = new MimeMultipart();
 		multipart.addBodyPart(bodyPart1);
-		multipart.addBodyPart(bodyPart2);
-		
+		if (!(emailMessage.getFile()[0].equals(""))) {
+		for (String filepath: emailMessage.getFile()) {
+			MimeBodyPart bodyPart2 = new MimeBodyPart();
+			bodyPart2.attachFile(filepath);
+			multipart.addBodyPart(bodyPart2);
+		}	
+		}
 		message.setContent(multipart);
 		
 	}
-
+	
+	/**
+	 * Sets the From Address
+	 * 
+	 * @param emailMessage
+	 * @param message
+	 * @throws Exception
+	 */
 	private static void setFromAddress(Email emailMessage, Message message) throws Exception {
 		
 		if (emailMessage.getRecipient().equals(null)) {
@@ -76,6 +114,14 @@ public class EmailUtility {
 		
 	}
 
+	/**
+	 * 
+	 * Accepts the given parameters and creates the
+	 * messages and properties object
+	 * 
+	 * @param emailMessage
+	 * @return
+	 */
 	private static Message createPropertyAndMessage(Email emailMessage) {
 
 		Properties properties = new Properties();
