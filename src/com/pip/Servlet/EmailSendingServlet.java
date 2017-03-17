@@ -26,19 +26,13 @@ public class EmailSendingServlet extends HttpServlet{
 	Email emailMessage = new Email();
 	
 	/**
-	 * Overrides the init constructor of servlet
-	 * by passing servlet config as arguement 
-	 */
-	public void init() {
-		ServletContext context = getServletContext();
-		emailMessage.setHostName(context.getInitParameter("host"));
-		emailMessage.setPortName(context.getInitParameter("port"));	
-	}
-	/**
 	 * Overrides the Service method of Generic Servlet 
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
+		ServletContext context = getServletContext();
+		emailMessage.setHostName(context.getInitParameter("host"));
+		emailMessage.setPortName(context.getInitParameter("port"));	
 		
 		emailMessage.setFrom(request.getParameter("from"));
 		emailMessage.setRecipient(request.getParameterValues("recipients"));
@@ -52,6 +46,7 @@ public class EmailSendingServlet extends HttpServlet{
 			EmailUtility.sendEmail(emailMessage);
 			resultMessage = "The Email was sent successfully";
 			request.setAttribute("message", resultMessage);
+			response.setContentType("text/html");
 			RequestDispatcher view = request.getRequestDispatcher("/Result.jsp");
 			view.forward(request, response);
 			

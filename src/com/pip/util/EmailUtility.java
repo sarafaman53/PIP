@@ -27,7 +27,7 @@ public class EmailUtility {
 	 * Instantiates a new Email Utility
 	 * 
 	 */
-	private EmailUtility() {
+	EmailUtility() {
 		
 	}
 
