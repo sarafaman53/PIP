@@ -12,16 +12,22 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.log4j.Logger;
+
 import com.pip.model.Email;
 
 /**
- * This class performs
- * commong Email Utilities
+ * <p> This is the Email Utility Class which 
+ * processes the parameters set from the model object 
+ * through the controller and processes it to construct an
+ * Email. <p>
  * 
  * @author asara3
  *
  */
 public class EmailUtility {
+	
+	static Logger log = Logger.getLogger(EmailUtility.class);
 	
 	/**
 	 * Instantiates a new Email Utility
@@ -40,7 +46,9 @@ public class EmailUtility {
 	 */
 	public static void sendEmail(Email emailMessage) throws Exception {
 		
+		log.info("Email Processing starts");
 		processEmail(emailMessage);
+		log.info("Email Processing Completed");
 		
 	}
 
@@ -53,9 +61,11 @@ public class EmailUtility {
 	 */
 	private static void processEmail(Email emailMessage) throws Exception {
 		
+		log.info("Creation of Property & Message Starts");
 		Message message = createPropertyAndMessage(emailMessage);
+		log.info("Propery & Message set successfully");
 		String[] recipientList = emailMessage.getRecipient();
-		InternetAddress[] recipientaddresses = new InternetAddress[emailMessage.getRecipient().length];
+		InternetAddress[] recipientaddresses = new InternetAddress[recipientList.length];
 		int counter = 0;
 		for(String recipient: recipientList) {
 			recipientaddresses[counter] = new InternetAddress(recipient);
@@ -65,10 +75,15 @@ public class EmailUtility {
 		message.setRecipients(Message.RecipientType.TO,recipientaddresses);
 		setFromAddress(emailMessage, message);
 		message.setSubject(emailMessage.getSubject());
+		log.info("Subject Set successfully");
 		message.setContent(emailMessage.getBody(), "text/plain");
+		log.info("Content set successfully");
 		setAttachment(emailMessage, message);
+		log.info("Attachment Added successfully");
 		message.saveChanges();
+		log.info("Message saved successfully");
 		Transport.send(message);
+		log.info("Message sent successfully");
 	}
 
 	/**
@@ -80,7 +95,7 @@ public class EmailUtility {
 	 * @throws Exception
 	 */
 	private static void setAttachment(Email emailMessage, Message message) throws Exception {
-		
+		log.info("Adding Attachment");
 		MimeBodyPart bodyPart1 = new MimeBodyPart();
 		bodyPart1.setContent(emailMessage.getBody(), "text/html");
 		Multipart multipart = new MimeMultipart();
@@ -105,12 +120,15 @@ public class EmailUtility {
 	 */
 	private static void setFromAddress(Email emailMessage, Message message) throws Exception {
 		
+		log.info("Set the From Address Starts");
 		if (emailMessage.getRecipient().equals(null)) {
 			message.setFrom();
 		}
 		else {
 			message.setFrom(new InternetAddress(emailMessage.getFrom()));
 		}
+		
+		log.info("Setting of From Address Completes");
 		
 	}
 
@@ -123,7 +141,7 @@ public class EmailUtility {
 	 * @return
 	 */
 	private static Message createPropertyAndMessage(Email emailMessage) {
-
+		log.info("Property & Message setting starts");
 		Properties properties = new Properties();
 		properties.put("mail.smtp.host", emailMessage.getHostName());
 		properties.put("mail.smtp.port", emailMessage.getPortName());

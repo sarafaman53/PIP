@@ -8,18 +8,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
+ * 
+ * This is our Servlet Test class which
+ * tests the controller for its email sending
+ * functionality
+ * 
  * @author asara3
  *
  */
 @RunWith(PowerMockRunner.class)
 public class EmailSendingServletTest extends Mockito{
 	
+	Logger log = Logger.getLogger(EmailSendingServletTest.class);
 	
 	/**
 	 * Test The Email Send Servlet
@@ -27,6 +34,7 @@ public class EmailSendingServletTest extends Mockito{
 	@Test
 	public void TestEmailSendingServlet() {
 		 
+		log.info("Testing Starts");
 		final ServletContext context = mock(ServletContext.class);
 		EmailSendingServlet servlet= new EmailSendingServlet() {
 			public ServletContext getServletContext() {
@@ -54,14 +62,17 @@ public class EmailSendingServletTest extends Mockito{
 		when(request.getParameterValues("file")).thenReturn(files);
 		when(request.getRequestDispatcher("/Result.jsp")).thenReturn(requestDispatcher);
 		
+		log.info("Email Model Set Successfully");
 		try {
 			servlet.doPost(request, response);
+			
+			log.info("Email Sent Successfully");
 		} catch (ServletException e) {
 			
-			e.printStackTrace();
+			log.error("Servlet Exception");
 		} catch (IOException e) {
 			
-			e.printStackTrace();
+			log.error("IO Exception");
 		}
 		
 		

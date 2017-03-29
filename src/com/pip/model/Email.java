@@ -2,8 +2,8 @@ package com.pip.model;
 
 /**
  * 
- * Class Representing the
- * Basic Email Attributes
+ * This is our model class containing
+ * the attributes of an Email body
  * 
  * @author asara3
  *

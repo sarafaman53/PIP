@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+    <%@ page import="java.util.Properties" %>
+    <%@ page import="java.io.InputStream" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +19,10 @@
 <tr>
 <td>Recipients</td>
 <td><select style="width: 100%" name="recipients" multiple>
-<% String[] recipients = application.getInitParameter("recipients").split(",");
+<% InputStream input = application.getResourceAsStream("/WEB-INF/Email.properties");
+Properties prop = new Properties();
+prop.load(input);
+String[] recipients = prop.getProperty("recipients").split(",");
 for(String addr:recipients) {
 	%> 
 	<option><%= addr %></option>
